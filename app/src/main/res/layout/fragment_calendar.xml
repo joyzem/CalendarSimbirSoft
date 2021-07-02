@@ -5,14 +5,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:scrollbars="vertical"
-    tools:context=".fragments.CalendarFragment">
-
+    tools:context=".view.fragments.CalendarFragment">
 
     <CalendarView
-        android:id="@+id/calendarView"
+        android:id="@+id/calendar_view"
         style="@android:style/Widget.Material.CalendarView"
-        android:layout_width="409dp"
-        android:layout_height="392dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:clickable="true"
         android:contextClickable="false"
         android:dateTextAppearance="@style/TextAppearance.AppCompat.Medium"
@@ -20,8 +19,7 @@
         android:isScrollContainer="false"
         android:weekDayTextAppearance="@style/TextAppearance.AppCompat.Medium"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <View
         android:id="@+id/divideLine"
@@ -29,8 +27,8 @@
         android:layout_height="5dp"
         android:background="?android:attr/listDivider"
         android:fadeScrollbars="false"
-        app:layout_constraintStart_toStartOf="@id/calendarView"
-        app:layout_constraintTop_toBottomOf="@id/calendarView" />
+        app:layout_constraintStart_toStartOf="@id/calendar_view"
+        app:layout_constraintTop_toBottomOf="@id/calendar_view" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/eventsRV"
@@ -38,7 +36,7 @@
         android:layout_height="0dp"
         android:scrollbars="vertical"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        app:layout_constraintStart_toStartOf="@id/calendarView"
+        app:layout_constraintStart_toStartOf="@id/calendar_view"
         app:layout_constraintTop_toBottomOf="@id/divideLine"
         app:layout_constraintBottom_toBottomOf="parent"/>
 

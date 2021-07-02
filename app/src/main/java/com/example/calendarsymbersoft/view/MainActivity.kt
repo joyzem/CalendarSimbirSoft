@@ -1,10 +1,11 @@
-package com.example.calendarsymbersoft
+package com.example.calendarsymbersoft.view
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupActionBarWithNavController
+import com.example.calendarsymbersoft.R
 import com.example.calendarsymbersoft.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
