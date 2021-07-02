@@ -9,7 +9,7 @@ import com.example.calendarsymbersoft.R
 import com.example.calendarsymbersoft.model.Event
 import io.realm.RealmResults
 
-class EventsAdapter(private val eventsList: List<Event>) : RecyclerView.Adapter<EventsAdapter.EventViewHolder>() {
+class EventsAdapter(private val eventsList: List<Event> = listOf()) : RecyclerView.Adapter<EventsAdapter.EventViewHolder>() {
 
     class EventViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val title: TextView = view.findViewById(R.id.eventTitle)
