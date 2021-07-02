@@ -9,5 +9,13 @@
         android:id="@+id/calendarFragment"
         android:name="com.example.calendarsymbersoft.view.fragments.CalendarFragment"
         android:label="fragment_calendar"
-        tools:layout="@layout/fragment_calendar" />
+        tools:layout="@layout/fragment_calendar" >
+        <action
+            android:id="@+id/action_calendarFragment_to_addEventFragment"
+            app:destination="@id/addEventFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/addEventFragment"
+        android:name="com.example.calendarsymbersoft.view.fragments.AddEventFragment"
+        android:label="AddEventFragment" />
 </navigation>

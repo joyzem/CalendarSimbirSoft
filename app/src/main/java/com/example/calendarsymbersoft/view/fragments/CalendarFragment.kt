@@ -7,10 +7,12 @@ import android.view.View
 import android.view.ViewGroup
 import com.example.calendarsymbersoft.contract.MainContract
 import com.example.calendarsymbersoft.databinding.FragmentCalendarBinding
+import com.example.calendarsymbersoft.presenter.CalendarPresenter
 
 
 class CalendarFragment : Fragment(), MainContract.CalendarView {
 
+    private val presenter = CalendarPresenter(this)
     private var _binding: FragmentCalendarBinding? = null
     private val binding get() = _binding!!
 
@@ -21,6 +23,15 @@ class CalendarFragment : Fragment(), MainContract.CalendarView {
     ): View? {
         _binding = FragmentCalendarBinding.inflate(inflater, container, false)
         return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+
+        binding.addEventBtn.setOnClickListener {
+            presenter.addEventBtnWasClicked(this.requireView())
+        }
+
+
     }
 
 }

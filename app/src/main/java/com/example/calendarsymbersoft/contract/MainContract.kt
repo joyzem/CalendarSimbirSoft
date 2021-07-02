@@ -9,11 +9,16 @@ interface MainContract {
 
     }
 
-    interface Presenter {
+    interface AddEventPresenter {
+
+    }
+
+    interface CalendarPresenter {
 
     }
 
     interface Repository {
 
     }
+
 }
