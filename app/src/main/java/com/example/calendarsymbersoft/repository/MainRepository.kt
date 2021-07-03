@@ -4,7 +4,8 @@ import com.example.calendarsymbersoft.contract.MainContract
 import com.example.calendarsymbersoft.model.Event
 
 class MainRepository : MainContract.Repository {
-    fun loadEvents(dayId: Long): List<Event>{
+
+    override fun loadEvents(dayId: Long): List<Event>{
         return listOf(
             Event(
                 id = 1,
@@ -22,4 +23,9 @@ class MainRepository : MainContract.Repository {
                 description = "Description 2")
         )
     }
+
+    override fun saveEvent(event: Event) {
+        TODO("Not yet implemented")
+    }
+
 }

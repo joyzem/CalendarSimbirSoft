@@ -23,7 +23,8 @@ interface MainContract {
     }
 
     interface Repository {
-
+        fun loadEvents(dayId: Long): List<Event>
+        fun saveEvent(event: Event)
     }
 
 }

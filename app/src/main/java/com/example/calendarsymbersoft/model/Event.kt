@@ -9,7 +9,7 @@ class Event(
     val description: String? = null
 ) : EventInterface {
     override fun getTimeRange(): String {
-//        TODO("Not yet implemented")
-        return ""
+        return TimeFormat.timeFormat.format(timeFrom!!).toString() + " - " + TimeFormat
+            .timeFormat.format(timeTo!!).toString()
     }
 }
