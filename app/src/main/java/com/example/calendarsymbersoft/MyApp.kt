@@ -14,6 +14,7 @@ class MyApp: Application() {
             .deleteRealmIfMigrationNeeded()
             .schemaVersion(0)
             .allowQueriesOnUiThread(true)
+            .allowWritesOnUiThread(true)
             .build()
         Realm.setDefaultConfiguration(config)
     }

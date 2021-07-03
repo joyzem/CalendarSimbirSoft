@@ -1,16 +1,15 @@
 package com.example.calendarsymbersoft.contract
 
-import android.view.View
-import android.widget.CalendarView
+import androidx.fragment.app.Fragment
+import androidx.navigation.NavDirections
+import androidx.navigation.fragment.findNavController
 import com.example.calendarsymbersoft.model.Event
 
 interface MainContract {
-    interface AddEventView {
 
-    }
-
-    interface CalendarView {
-
+    interface View {
+        fun moveToAnotherFragment()
+        fun getStringResource(resourceId: Int): String
     }
 
     interface AddEventPresenter {
@@ -18,13 +17,13 @@ interface MainContract {
     }
 
     interface CalendarPresenter {
-        fun addEventBtnWasClicked(view: View)
+        fun addEventBtnWasClicked()
         fun loadEventsBySelectedDate(view: android.widget.CalendarView): List<Event>
     }
 
     interface Repository {
         fun loadEvents(dayId: Long): List<Event>
-        fun saveEvent(event: Event)
+        fun saveEvent(jsonString: String)
     }
 
 }

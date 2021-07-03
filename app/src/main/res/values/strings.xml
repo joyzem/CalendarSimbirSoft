@@ -15,4 +15,6 @@
     <string name="add_the_event">Add the event</string>
     <string name="back">BACK</string>
     <string name="incorrect_input">Incorrect input</string>
+    <string name="event_added_successfully">Event added successfully!</string>
+    <string name="no_description">No description</string>
 </resources>

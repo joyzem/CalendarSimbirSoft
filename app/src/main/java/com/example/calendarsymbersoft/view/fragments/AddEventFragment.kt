@@ -14,12 +14,14 @@ import com.example.calendarsymbersoft.contract.MainContract
 import com.example.calendarsymbersoft.databinding.FragmentAddEventBinding
 import com.example.calendarsymbersoft.model.TimeFormat
 import com.example.calendarsymbersoft.presenter.AddEventPresenter
-import com.example.calendarsymbersoft.repository.MainRepository
+import java.lang.Exception
 import java.util.*
 
-class AddEventFragment : Fragment(), MainContract.AddEventView {
+class AddEventFragment : Fragment(),
+    MainContract.View {
 
-    private val presenter = AddEventPresenter()
+    private val TAG = "ADD EVENT FRAGMENT"
+    private val presenter = AddEventPresenter(this)
     private var _binding: FragmentAddEventBinding? = null
     private val binding get() = _binding!!
     private var _dayId: Long? = null
@@ -53,30 +55,44 @@ class AddEventFragment : Fragment(), MainContract.AddEventView {
         }
 
         binding.commitBtn.setOnClickListener {
-            if (validFields()) {
+            try {
+                if (validFields()) {
+                    if (binding.descriptionEditText.text.isNullOrEmpty()) {
+                        binding.descriptionEditText.setText(R.string.no_description)
+                    }
 
-                presenter.saveEventToDB(
-                    dayId = dayId,
-                    timeFrom = timeFrom,
-                    timeTo = timeTo,
-                    description = binding.descriptionEditText.text.toString(),
-                    title = binding.titleEditText.text.toString()
-                )
-            } else {
-                Toast.makeText(this.requireContext(), R.string.incorrect_input, Toast.LENGTH_SHORT).show()
+                    val result = presenter.saveEventToDB(
+                        dayId = dayId,
+                        timeFrom = timeFrom,
+                        timeTo = timeTo,
+                        description = binding.descriptionEditText.text.toString(),
+                        title = binding.titleEditText.text.toString()
+                    )
+
+                    Toast.makeText(this.requireContext(), result, Toast.LENGTH_SHORT).show()
+
+                } else {
+                    Toast.makeText(this.requireContext(), R.string.incorrect_input, Toast.LENGTH_SHORT).show()
+                }
+            } catch (e: Exception) {
+                Toast.makeText(this.requireContext(), "Error: $e", Toast.LENGTH_SHORT).show()
             }
+
+        }
+
+        binding.backBtn.setOnClickListener {
+
         }
     }
 
     private fun validFields(): Boolean {
-        if (binding.titleEditText.text.isNullOrEmpty()
-            || binding.dateEditText.text.isNullOrEmpty()
-            || binding.timeFromEditText.text.isNullOrEmpty()
-            || binding.timeToEditText.text.isNullOrEmpty()) {
-            return true
-        }
-        else {
+        if (binding.titleEditText.text.toString().isNullOrEmpty()
+            || binding.dateEditText.text.toString().isNullOrEmpty()
+            || binding.timeFromEditText.text.toString().isNullOrEmpty()
+            || binding.timeToEditText.text.toString().isNullOrEmpty()) {
             return false
+        } else {
+            return true
         }
     }
 
@@ -127,6 +143,10 @@ class AddEventFragment : Fragment(), MainContract.AddEventView {
         )
         timePicker.show()
         return time
+    }
+
+    override fun getStringResource(resourceId: Int): String {
+        return this.getString(resourceId)
     }
 
 }

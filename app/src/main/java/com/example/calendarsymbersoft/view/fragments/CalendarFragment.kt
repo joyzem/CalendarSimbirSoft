@@ -6,17 +6,22 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CalendarView
+import androidx.navigation.NavDirections
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.calendarsymbersoft.R
 import com.example.calendarsymbersoft.contract.MainContract
 import com.example.calendarsymbersoft.databinding.FragmentCalendarBinding
 import com.example.calendarsymbersoft.presenter.CalendarPresenter
 import com.example.calendarsymbersoft.view.adapter.EventsAdapter
+import java.util.*
 
 
-class CalendarFragment : Fragment(), MainContract.CalendarView {
+class CalendarFragment : Fragment(),
+    MainContract.View {
 
-    private val presenter = CalendarPresenter()
+    private val presenter = CalendarPresenter(this)
     private var _binding: FragmentCalendarBinding? = null
     private val binding get() = _binding!!
     private lateinit var recyclerView: RecyclerView
@@ -37,7 +42,7 @@ class CalendarFragment : Fragment(), MainContract.CalendarView {
         updateRecyclerViewDataset(CalendarView(this.requireContext()))
 
         binding.addEventBtn.setOnClickListener {
-            presenter.addEventBtnWasClicked(this.requireView())
+            presenter.addEventBtnWasClicked()
         }
 
         binding.calendarView.setOnDateChangeListener { view, year, month, dayOfMonth ->
@@ -49,6 +54,16 @@ class CalendarFragment : Fragment(), MainContract.CalendarView {
         val events = presenter.loadEventsBySelectedDate(view)
         recyclerView.adapter = EventsAdapter(events)
         recyclerView.adapter!!.notifyDataSetChanged()
+    }
+
+    override fun moveToAnotherFragment() {
+        val action = CalendarFragmentDirections
+            .actionCalendarFragmentToAddEventFragment()
+        this.findNavController().navigate(action)
+    }
+
+    override fun getStringResource(resourceId: Int): String {
+        return getString(resourceId)
     }
 
 }
