@@ -45,7 +45,7 @@ class CalendarFragment : Fragment(),
         updateRecyclerViewDataset(currentDay.timeInMillis)
 
         binding.addEventBtn.setOnClickListener {
-            presenter.addEventBtnWasClicked()
+            navToAnotherFragment(R.id.action_calendarFragment_to_addEventFragment)
         }
 
         binding.calendarView.setOnDateChangeListener { calendView, year, month, dayOfMonth ->
@@ -54,26 +54,32 @@ class CalendarFragment : Fragment(),
             selectedDay.set(Calendar.MONTH, month)
             selectedDay.set(Calendar.DAY_OF_MONTH, dayOfMonth)
             setTimeToZero(selectedDay)
-            Toast.makeText(this.requireContext(), selectedDay.timeInMillis.toString(), Toast.LENGTH_LONG).show()
             updateRecyclerViewDataset(selectedDay.timeInMillis)
         }
     }
 
     private fun updateRecyclerViewDataset(day: Long) {
         val events = presenter.loadEventsBySelectedDate(day)
-        recyclerView.adapter = EventsAdapter(this.requireContext(), eventsList = events)
+        recyclerView.adapter = EventsAdapter(this, eventsList = events)
         recyclerView.adapter!!.notifyDataSetChanged()
-    }
-
-    override fun moveToAnotherFragment() {
-        val action = CalendarFragmentDirections
-            .actionCalendarFragmentToAddEventFragment()
-        this.findNavController().navigate(action)
     }
 
     override fun getStringResource(resourceId: Int): String {
         return getString(resourceId)
     }
+
+    override fun navToAnotherFragment(resourceId: Int) {
+        findNavController().navigate(resourceId)
+    }
+
+    override fun navToAnotherFragment(resourceId: Int, args: Bundle) {
+        findNavController().navigate(resourceId, args)
+    }
+
+    override fun showMessage(message: String) {
+        Toast.makeText(this.requireContext(), message, Toast.LENGTH_LONG).show()
+    }
+
 
     private fun setTimeToZero(selectedDay: Calendar) {
         selectedDay.set(Calendar.HOUR_OF_DAY, 0)

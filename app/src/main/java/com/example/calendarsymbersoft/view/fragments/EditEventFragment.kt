@@ -7,36 +7,53 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
 import android.widget.Toast
 import androidx.navigation.fragment.findNavController
 import com.example.calendarsymbersoft.R
 import com.example.calendarsymbersoft.contract.MainContract
-import com.example.calendarsymbersoft.databinding.FragmentAddEventBinding
+import com.example.calendarsymbersoft.databinding.FragmentEditEventBinding
 import com.example.calendarsymbersoft.model.TimeFormat
-import com.example.calendarsymbersoft.presenter.AddEventPresenter
+import com.example.calendarsymbersoft.presenter.EditEventPresenter
 import java.lang.Exception
 import java.util.*
 
-class AddEventFragment : Fragment(), MainContract.View {
+class EditEventFragment : Fragment(), MainContract.View {
 
-    private val presenter = AddEventPresenter(this)
-    private var _binding: FragmentAddEventBinding? = null
+    private var _binding: FragmentEditEventBinding? = null
     private val binding get() = _binding!!
+    private val presenter = EditEventPresenter()
+    private var _eventID: Int? = null
+    private val eventID get() = _eventID!!
     private var dayId: Long? = null
     private var timeFrom: Long? = null
     private var timeTo: Long? = null
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        arguments?.let {
+            _eventID = it.getInt("eventID")
+            dayId = it.getLong("dayID")
+            timeFrom = it.getLong("timeFrom")
+            timeTo = it.getLong("timeTo")
+        }
+
+    }
+
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
+        inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        _binding = FragmentAddEventBinding.inflate(inflater, container, false)
+        _binding = FragmentEditEventBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        binding.title.setText(presenter.getTitleByID(eventID))
+        binding.dateEditText.setText(TimeFormat.dateFormat.format(presenter.getDayIdByID(eventID)))
+        binding.timeFromEditText.setText(TimeFormat.timeFormat.format(presenter.getTimeFromByID(eventID)))
+        binding.timeToEditText.setText(TimeFormat.timeFormat.format(presenter.getTimeToByID(eventID)))
+        binding.descriptionEditText.setText(presenter.getDescriptionById(eventID))
+
         binding.dateEditText.setOnClickListener {
             pickDateByDialog()
         }
@@ -50,42 +67,47 @@ class AddEventFragment : Fragment(), MainContract.View {
         }
 
         binding.commitBtn.setOnClickListener {
-            try {
-                if (validFields()) {
-                    if (binding.descriptionEditText.text.isNullOrEmpty()) {
-                        binding.descriptionEditText.setText(R.string.no_description)
-                    }
-                    val resultOfSaving = presenter.saveEventToDB(
-                        dayId = dayId!!,
-                        timeFrom = timeFrom!!,
-                        timeTo = timeTo!!,
-                        description = binding.descriptionEditText.text.toString(),
-                        title = binding.titleEditText.text.toString()
-                    )
-                    Toast.makeText(this.requireContext(), resultOfSaving, Toast.LENGTH_SHORT).show()
-                    navToAnotherFragment(R.id.action_addEventFragment_to_calendarFragment)
-                } else {
-                    Toast.makeText(this.requireContext(), R.string.incorrect_input, Toast.LENGTH_SHORT).show()
-                }
-            } catch (e: Exception) {
-                Toast.makeText(this.requireContext(), "Error: $e", Toast.LENGTH_SHORT).show()
-            }
+            onUpdateBtnClicked()
         }
 
-        binding.backBtn.setOnClickListener {
-            navToAnotherFragment(R.id.action_addEventFragment_to_calendarFragment)
+        binding.cancelButton.setOnClickListener {
+            navToAnotherFragment(R.id.action_editEventFragment_to_calendarFragment)
+        }
+    }
+
+    private fun onUpdateBtnClicked () {
+        try {
+            if (validFields()) {
+                if (binding.descriptionEditText.text.isNullOrEmpty()) {
+                    binding.descriptionEditText.setText(R.string.no_description)
+                }
+                val resultOfSaving = presenter.updateEvent(
+                    id = eventID,
+                    dayID = dayId!!,
+                    timeFrom = timeFrom!!,
+                    timeTo = timeTo!!,
+                    description = binding.descriptionEditText.text.toString(),
+                    title = binding.title.text.toString()
+                )
+                showMessage(resultOfSaving.toString())
+                navToAnotherFragment(R.id.action_editEventFragment_to_calendarFragment)
+            } else {
+                showMessage(getString(R.string.incorrect_input))
+            }
+        } catch (e: Exception) {
+            Toast.makeText(this.requireContext(), "Error: $e", Toast.LENGTH_SHORT).show()
         }
     }
 
     private fun validFields(): Boolean {
-        if (!(binding.titleEditText.text.toString().isEmpty() ||
+        if (!(binding.title.text.toString().isEmpty() ||
                     binding.dateEditText.text.toString().isEmpty() ||
                     binding.timeFromEditText.text.toString().isEmpty() ||
                     binding.timeToEditText.text.toString().isEmpty()) &&
-                    dayId != null &&
-                    timeFrom != null &&
-                    timeTo != null &&
-                    timeFrom!! < timeTo!!) {
+            dayId != null &&
+            timeFrom != null &&
+            timeTo != null &&
+            timeFrom!! < timeTo!!) {
             return true
         } else {
             return false
@@ -146,7 +168,7 @@ class AddEventFragment : Fragment(), MainContract.View {
     }
 
     override fun getStringResource(resourceId: Int): String {
-        return this.getString(resourceId)
+        return getString(resourceId)
     }
 
     override fun navToAnotherFragment(resourceId: Int) {
@@ -160,4 +182,5 @@ class AddEventFragment : Fragment(), MainContract.View {
     override fun showMessage(message: String) {
         Toast.makeText(this.requireContext(), message, Toast.LENGTH_LONG).show()
     }
+
 }

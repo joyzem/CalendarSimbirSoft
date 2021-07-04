@@ -1,5 +1,8 @@
 package com.example.calendarsymbersoft.contract
 
+import android.content.Context
+import android.os.Bundle
+import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavDirections
 import androidx.navigation.fragment.findNavController
@@ -8,8 +11,10 @@ import com.example.calendarsymbersoft.model.Event
 interface MainContract {
 
     interface View {
-        fun moveToAnotherFragment()
         fun getStringResource(resourceId: Int): String
+        fun navToAnotherFragment(resourceId: Int)
+        fun navToAnotherFragment(resourceId: Int, args: Bundle)
+        fun showMessage(message: String)
     }
 
     interface AddEventPresenter {
@@ -24,7 +29,6 @@ interface MainContract {
     }
 
     interface CalendarPresenter {
-        fun addEventBtnWasClicked()
         fun loadEventsBySelectedDate(day: Long): List<Event>
     }
 

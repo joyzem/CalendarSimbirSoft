@@ -17,4 +17,7 @@
     <string name="incorrect_input">Incorrect input</string>
     <string name="event_added_successfully">Event added successfully!</string>
     <string name="no_description">No description</string>
+    <string name="input_title">Input title</string>
+    <string name="update_event">Update Event</string>
+    <string name="cancel">Cancel</string>
 </resources>

@@ -37,7 +37,7 @@ class AddEventPresenter(private val addEventView: MainContract.View) : MainContr
     }
 
     override fun backBtnWasClicked() {
-        addEventView.moveToAnotherFragment()
+        addEventView.navToAnotherFragment(R.id.action_addEventFragment_to_calendarFragment)
     }
 
 }
