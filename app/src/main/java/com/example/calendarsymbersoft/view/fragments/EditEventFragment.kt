@@ -1,12 +1,13 @@
 package com.example.calendarsymbersoft.view.fragments
 
+import android.app.AlertDialog
 import android.app.DatePickerDialog
+import android.app.Dialog
 import android.app.TimePickerDialog
+import android.content.DialogInterface
 import android.os.Bundle
+import android.view.*
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import android.widget.Toast
 import androidx.navigation.fragment.findNavController
 import com.example.calendarsymbersoft.R
@@ -36,6 +37,7 @@ class EditEventFragment : Fragment(), MainContract.View {
             timeFrom = it.getLong("timeFrom")
             timeTo = it.getLong("timeTo")
         }
+        setHasOptionsMenu(true)
 
     }
 
@@ -167,6 +169,30 @@ class EditEventFragment : Fragment(), MainContract.View {
         timePicker.show()
     }
 
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.edit_event_menu_layout, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.delete_event_icon -> {
+                val commitDialog = AlertDialog.Builder(this.requireContext())
+                    .setTitle(R.string.delete_the_event)
+                    .setMessage(R.string.you_sure)
+                    .setIcon(R.drawable.delete_icon)
+                commitDialog.setPositiveButton(R.string.yes) { dialog, id ->
+                    presenter.deleteEvent(id = eventID)
+                    showMessage(getStringResource(R.string.event_deleted))
+                    navToAnotherFragment(R.id.action_editEventFragment_to_calendarFragment)
+                }
+                commitDialog.setNegativeButton(R.string.no) { dialog, id -> }
+                commitDialog.show()
+                return true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
     override fun getStringResource(resourceId: Int): String {
         return getString(resourceId)
     }
@@ -181,6 +207,11 @@ class EditEventFragment : Fragment(), MainContract.View {
 
     override fun showMessage(message: String) {
         Toast.makeText(this.requireContext(), message, Toast.LENGTH_LONG).show()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
     }
 
 }

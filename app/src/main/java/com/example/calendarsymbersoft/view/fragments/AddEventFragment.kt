@@ -160,4 +160,9 @@ class AddEventFragment : Fragment(), MainContract.View {
     override fun showMessage(message: String) {
         Toast.makeText(this.requireContext(), message, Toast.LENGTH_LONG).show()
     }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
+    }
 }

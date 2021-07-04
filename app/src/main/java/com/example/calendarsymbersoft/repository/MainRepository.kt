@@ -39,4 +39,10 @@ class MainRepository : MainContract.Repository {
         return nextId
     }
 
+    fun deleteEventById(id: Int) {
+        realm.executeTransaction {
+            realm.where(Event::class.java).equalTo("id", id).findFirst()!!.deleteFromRealm()
+        }
+    }
+
 }

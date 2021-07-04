@@ -52,4 +52,8 @@ class EditEventPresenter {
         repository.addOrUpdateEvent(eventJson)
     }
 
+    fun deleteEvent(id: Int) {
+        repository.deleteEventById(id)
+    }
+
 }

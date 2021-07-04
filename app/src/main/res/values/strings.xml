@@ -20,4 +20,9 @@
     <string name="input_title">Input title</string>
     <string name="update_event">Update Event</string>
     <string name="cancel">Cancel</string>
+    <string name="delete_the_event">Delete the Event</string>
+    <string name="you_sure">Are you sure?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="event_deleted">Event was deleted</string>
 </resources>

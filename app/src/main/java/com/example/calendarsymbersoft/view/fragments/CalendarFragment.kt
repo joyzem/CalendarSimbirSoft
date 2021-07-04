@@ -88,4 +88,8 @@ class CalendarFragment : Fragment(),
         selectedDay.set(Calendar.MILLISECOND, 0)
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
+    }
 }
