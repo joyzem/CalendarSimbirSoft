@@ -9,7 +9,7 @@ class AddEventPresenter(private val addEventView: MainContract.View) : MainContr
 
     private val repository = MainRepository()
 
-    fun saveEventToDB(
+    override fun saveEventToDB(
         dayId: Long,
         timeFrom: Long,
         timeTo: Long,
@@ -18,7 +18,6 @@ class AddEventPresenter(private val addEventView: MainContract.View) : MainContr
     ): String {
         try {
             val nextId = repository.findNextId()
-
             val event = Event (
                 dayId = dayId,
                 timeFrom = timeFrom,
@@ -29,13 +28,16 @@ class AddEventPresenter(private val addEventView: MainContract.View) : MainContr
             )
 
             val eventJson = repository.gson.toJson(event)
-
-            repository.saveEvent(eventJson)
+            repository.addOrUpdateEvent(eventJson)
 
             return addEventView.getStringResource(R.string.event_added_successfully)
         } catch (e: Exception) {
             return e.toString()
         }
+    }
+
+    override fun backBtnWasClicked() {
+        addEventView.moveToAnotherFragment()
     }
 
 }

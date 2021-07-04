@@ -13,17 +13,25 @@ interface MainContract {
     }
 
     interface AddEventPresenter {
-
+        fun backBtnWasClicked()
+        fun saveEventToDB(
+            dayId: Long,
+            timeFrom: Long,
+            timeTo: Long,
+            title: String,
+            description: String
+        ): String
     }
 
     interface CalendarPresenter {
         fun addEventBtnWasClicked()
-        fun loadEventsBySelectedDate(view: android.widget.CalendarView): List<Event>
+        fun loadEventsBySelectedDate(day: Long): List<Event>
     }
 
     interface Repository {
-        fun loadEvents(dayId: Long): List<Event>
-        fun saveEvent(jsonString: String)
+        fun getEventsByDayId(dayId: Long): List<Event>
+        fun addOrUpdateEvent(jsonString: String)
+        fun deleteEvent(id: Int, dayId: Long)
     }
 
 }

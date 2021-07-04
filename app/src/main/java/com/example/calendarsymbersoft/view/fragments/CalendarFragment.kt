@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CalendarView
+import android.widget.Toast
 import androidx.navigation.NavDirections
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -36,23 +37,31 @@ class CalendarFragment : Fragment(),
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-
         recyclerView = binding.eventsRV
         recyclerView.layoutManager = LinearLayoutManager(this.requireContext())
-        updateRecyclerViewDataset(CalendarView(this.requireContext()))
+
+        val currentDay = Calendar.getInstance()
+        setTimeToZero(currentDay)
+        updateRecyclerViewDataset(currentDay.timeInMillis)
 
         binding.addEventBtn.setOnClickListener {
             presenter.addEventBtnWasClicked()
         }
 
-        binding.calendarView.setOnDateChangeListener { view, year, month, dayOfMonth ->
-            updateRecyclerViewDataset(view)
+        binding.calendarView.setOnDateChangeListener { calendView, year, month, dayOfMonth ->
+            val selectedDay = Calendar.getInstance()
+            selectedDay.set(Calendar.YEAR, year)
+            selectedDay.set(Calendar.MONTH, month)
+            selectedDay.set(Calendar.DAY_OF_MONTH, dayOfMonth)
+            setTimeToZero(selectedDay)
+            Toast.makeText(this.requireContext(), selectedDay.timeInMillis.toString(), Toast.LENGTH_LONG).show()
+            updateRecyclerViewDataset(selectedDay.timeInMillis)
         }
     }
 
-    private fun updateRecyclerViewDataset(view: CalendarView) {
-        val events = presenter.loadEventsBySelectedDate(view)
-        recyclerView.adapter = EventsAdapter(events)
+    private fun updateRecyclerViewDataset(day: Long) {
+        val events = presenter.loadEventsBySelectedDate(day)
+        recyclerView.adapter = EventsAdapter(this.requireContext(), eventsList = events)
         recyclerView.adapter!!.notifyDataSetChanged()
     }
 
@@ -64,6 +73,13 @@ class CalendarFragment : Fragment(),
 
     override fun getStringResource(resourceId: Int): String {
         return getString(resourceId)
+    }
+
+    private fun setTimeToZero(selectedDay: Calendar) {
+        selectedDay.set(Calendar.HOUR_OF_DAY, 0)
+        selectedDay.set(Calendar.MINUTE, 0)
+        selectedDay.set(Calendar.SECOND, 0)
+        selectedDay.set(Calendar.MILLISECOND, 0)
     }
 
 }

@@ -11,8 +11,8 @@ open class Event(
     var timeFrom: Long? = null,
     var timeTo: Long? = null,
     var description: String? = null
-) : EventInterface, RealmObject() {
-    override fun getTimeRange(): String {
+) : RealmObject() {
+    fun getTimeRange(): String {
         return TimeFormat.timeFormat.format(timeFrom!!).toString() + " - " + TimeFormat
             .timeFormat.format(timeTo!!).toString()
     }

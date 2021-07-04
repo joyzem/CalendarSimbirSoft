@@ -13,31 +13,19 @@ class MainRepository : MainContract.Repository {
     val gson = Gson()
     val realm = Realm.getDefaultInstance()
 
-    override fun loadEvents(dayId: Long): List<Event>{
-        return listOf(
-            Event(
-                dayId = 1,
-                title = "SJK",
-                timeFrom = 1000000,
-                timeTo = 1000010,
-                description = "Description",
-                id = 1),
-            Event(
-                dayId = 2,
-                title = "LJK",
-                timeFrom = 1000000,
-                timeTo = 1000010,
-                description = "Description 2",
-                id = 2)
-        )
+    override fun getEventsByDayId(dayId: Long): List<Event>{
+        return realm.where(Event::class.java).equalTo("dayId", dayId).findAll().toList()
     }
 
-    override fun saveEvent(jsonString: String) {
+    override fun addOrUpdateEvent(jsonString: String) {
         realm.executeTransaction {
             realm.createOrUpdateObjectFromJson(Event::class.java, jsonString)
         }
-
         Log.d(TAG, "Success")
+    }
+
+    override fun deleteEvent(id: Int, dayId: Long) {
+        TODO("Not yet implemented")
     }
 
     fun findNextId(): Int {

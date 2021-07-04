@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.Toast
+import androidx.navigation.fragment.findNavController
 import com.example.calendarsymbersoft.R
 import com.example.calendarsymbersoft.contract.MainContract
 import com.example.calendarsymbersoft.databinding.FragmentAddEventBinding
@@ -17,10 +18,8 @@ import com.example.calendarsymbersoft.presenter.AddEventPresenter
 import java.lang.Exception
 import java.util.*
 
-class AddEventFragment : Fragment(),
-    MainContract.View {
+class AddEventFragment : Fragment(), MainContract.View {
 
-    private val TAG = "ADD EVENT FRAGMENT"
     private val presenter = AddEventPresenter(this)
     private var _binding: FragmentAddEventBinding? = null
     private val binding get() = _binding!!
@@ -43,7 +42,7 @@ class AddEventFragment : Fragment(),
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
         binding.dateEditText.setOnClickListener {
-            _dayId = pickDateByDialog()
+            pickDateByDialog()
         }
 
         binding.timeFromEditText.setOnClickListener {
@@ -60,7 +59,6 @@ class AddEventFragment : Fragment(),
                     if (binding.descriptionEditText.text.isNullOrEmpty()) {
                         binding.descriptionEditText.setText(R.string.no_description)
                     }
-
                     val result = presenter.saveEventToDB(
                         dayId = dayId,
                         timeFrom = timeFrom,
@@ -86,23 +84,21 @@ class AddEventFragment : Fragment(),
     }
 
     private fun validFields(): Boolean {
-        if (binding.titleEditText.text.toString().isNullOrEmpty()
-            || binding.dateEditText.text.toString().isNullOrEmpty()
-            || binding.timeFromEditText.text.toString().isNullOrEmpty()
-            || binding.timeToEditText.text.toString().isNullOrEmpty()) {
+        if (binding.titleEditText.text.toString().isEmpty()
+            || binding.dateEditText.text.toString().isEmpty()
+            || binding.timeFromEditText.text.toString().isEmpty()
+            || binding.timeToEditText.text.toString().isEmpty()) {
             return false
         } else {
             return true
         }
     }
 
-    private fun pickDateByDialog(): Long {
+    private fun pickDateByDialog() {
         val now = Calendar.getInstance()
-        var dayId: Long = now.time.time
         val datePicker = DatePickerDialog(
             this.requireContext(),
             { view, year, month, dayOfMonth ->
-
                 val selectedDate = Calendar.getInstance()
                 selectedDate.set(Calendar.YEAR, year)
                 selectedDate.set(Calendar.MONTH, month)
@@ -111,18 +107,14 @@ class AddEventFragment : Fragment(),
                 selectedDate.set(Calendar.MINUTE, 0)
                 selectedDate.set(Calendar.SECOND, 0)
                 selectedDate.set(Calendar.MILLISECOND, 0)
-
-                dayId = selectedDate.time.time
+                _dayId = selectedDate.time.time
 
                 val dayTextFormat = TimeFormat.dateFormat.format(dayId)
                 binding.dateEditText.setText(dayTextFormat)
             },
             now.get(Calendar.YEAR), now.get(Calendar.MONTH), now.get(Calendar.DAY_OF_MONTH)
         )
-
         datePicker.show()
-
-        return dayId
     }
 
     private fun pickTimeByDialog(textField: EditText): Long {
@@ -131,13 +123,10 @@ class AddEventFragment : Fragment(),
         val timePicker = TimePickerDialog(
             this.requireContext(), TimePickerDialog.OnTimeSetListener { view, hourOfDay, minute ->
                 val selectedTime = Calendar.getInstance()
-
                 selectedTime.set(Calendar.HOUR_OF_DAY, hourOfDay)
                 selectedTime.set(Calendar.MINUTE, minute)
-
                 time = selectedTime.time.time
                 textField.setText(TimeFormat.timeFormat.format(selectedTime.time))
-
             },
             now.get(Calendar.HOUR_OF_DAY), 0, false
         )
@@ -145,8 +134,13 @@ class AddEventFragment : Fragment(),
         return time
     }
 
+    override fun moveToAnotherFragment() {
+        val action = AddEventFragmentDirections
+            .actionAddEventFragmentToCalendarFragment()
+        this.findNavController().navigate(action)
+    }
+
     override fun getStringResource(resourceId: Int): String {
         return this.getString(resourceId)
     }
-
 }

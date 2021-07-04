@@ -13,7 +13,7 @@ class CalendarPresenter(private val calView: MainContract.View) : MainContract.C
         calView.moveToAnotherFragment()
     }
 
-    override fun loadEventsBySelectedDate(view: CalendarView): List<Event> {
-        return repository.loadEvents(view.date)
+    override fun loadEventsBySelectedDate(day: Long): List<Event> {
+        return repository.getEventsByDayId(day)
     }
 }
