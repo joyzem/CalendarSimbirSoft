@@ -2,14 +2,11 @@ package com.example.calendarsymbersoft.view.fragments
 
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
-import android.content.Context
-import android.content.DialogInterface
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
 import android.widget.Toast
 import androidx.navigation.fragment.findNavController
 import com.example.calendarsymbersoft.R
@@ -30,7 +27,7 @@ class AddEventFragment : Fragment(), MainContract.View {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentAddEventBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -74,22 +71,18 @@ class AddEventFragment : Fragment(), MainContract.View {
     }
 
     private fun validFields(): Boolean {
-        if (!(binding.titleEditText.text.toString().isEmpty()) &&
-                    presenter.getDayId() != null &&
-                    presenter.getTimeFrom() != null &&
-                    presenter.getTimeTo() != null &&
-                    presenter.getTimeFrom()!! < presenter.getTimeTo()!!) {
-            return true
-        } else {
-            return false
-        }
+        return binding.titleEditText.text.toString().isNotEmpty() &&
+                presenter.getDayId() != null &&
+                presenter.getTimeFrom() != null &&
+                presenter.getTimeTo() != null &&
+                presenter.getTimeFrom()!! < presenter.getTimeTo()!!
     }
 
     private fun pickDateByDialog() {
         val now = Calendar.getInstance()
         val datePicker = DatePickerDialog(
             this.requireContext(),
-            { view, year, month, dayOfMonth ->
+            { _, year, month, dayOfMonth ->
                 val selectedDate = Calendar.getInstance()
                 selectedDate.set(Calendar.YEAR, year)
                 selectedDate.set(Calendar.MONTH, month)
@@ -111,7 +104,8 @@ class AddEventFragment : Fragment(), MainContract.View {
     private fun pickTimeByDialog(isTimeFrom: Boolean){
         val now = Calendar.getInstance()
         val timePicker = TimePickerDialog(
-            this.requireContext(), TimePickerDialog.OnTimeSetListener { view, hourOfDay, minute ->
+            this.requireContext(),
+            { _, hourOfDay, minute ->
                 val selectedTime = Calendar.getInstance()
                 selectedTime.set(Calendar.HOUR_OF_DAY, hourOfDay)
                 selectedTime.set(Calendar.MINUTE, minute)

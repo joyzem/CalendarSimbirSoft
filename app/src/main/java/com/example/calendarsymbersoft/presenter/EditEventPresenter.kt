@@ -38,8 +38,8 @@ class EditEventPresenter {
         timeTo = time
     }
 
-    fun setDescription(descr: String) {
-        description = descr
+    fun setDescription(description: String) {
+        this.description = description
     }
 
     fun setEventTitle(title: String) {
@@ -85,7 +85,7 @@ class EditEventPresenter {
     }
 
     fun deleteEvent() {
-        repository.deleteEventById(eventID!!)
+        repository.deleteEvent(eventID!!)
     }
 
 }

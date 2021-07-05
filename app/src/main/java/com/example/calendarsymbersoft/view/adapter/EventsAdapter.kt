@@ -1,17 +1,14 @@
 package com.example.calendarsymbersoft.view.adapter
 
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.example.calendarsymbersoft.R
 import com.example.calendarsymbersoft.contract.MainContract
 import com.example.calendarsymbersoft.model.Event
-import io.realm.RealmResults
 import java.lang.Exception
 
 class EventsAdapter(
@@ -32,11 +29,9 @@ class EventsAdapter(
                     val positionIndex = absoluteAdapterPosition
                     val bundle = Bundle()
                     bundle.putInt("eventID", eventsList[positionIndex].id!!)
-                    bundle.putLong("dayID", eventsList[positionIndex].dayId!!)
-                    bundle.putLong("timeFrom", eventsList[positionIndex].timeFrom!!)
-                    bundle.putLong("timeTo", eventsList[positionIndex].timeTo!!)
                     calView.navToAnotherFragment(
-                        R.id.action_calendarFragment_to_editEventFragment, bundle
+                        R.id.action_calendarFragment_to_editEventFragment,
+                        bundle
                     )
                 } catch (e: Exception) {
                     calView.showMessage(e.toString())

@@ -2,10 +2,7 @@ package com.example.calendarsymbersoft.view.fragments
 
 import android.app.AlertDialog
 import android.app.DatePickerDialog
-import android.app.Dialog
 import android.app.TimePickerDialog
-import android.content.Context
-import android.content.DialogInterface
 import android.os.Bundle
 import android.view.*
 import androidx.fragment.app.Fragment
@@ -38,7 +35,7 @@ class EditEventFragment : Fragment(), MainContract.View {
 
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentEditEventBinding.inflate(inflater, container, false)
         binding.title.setText(presenter.getEventTitle())
         binding.dateEditText.setText(TimeFormat.dateFormat.format(presenter.getEventDayId()))
@@ -92,19 +89,15 @@ class EditEventFragment : Fragment(), MainContract.View {
     }
 
     private fun validFields(): Boolean {
-        if (!(binding.title.text.toString().isEmpty()) &&
-            presenter.getEventTimeFrom() < presenter.getEventTimeTo()) {
-            return true
-        } else {
-            return false
-        }
+        return binding.title.text.toString().isNotEmpty() &&
+                presenter.getEventTimeFrom() < presenter.getEventTimeTo()
     }
 
     private fun pickDateByDialog() {
         val now = Calendar.getInstance()
         val datePicker = DatePickerDialog(
             this.requireContext(),
-            { view, year, month, dayOfMonth ->
+            { _, year, month, dayOfMonth ->
                 val selectedDate = Calendar.getInstance()
                 selectedDate.set(Calendar.YEAR, year)
                 selectedDate.set(Calendar.MONTH, month)
@@ -126,7 +119,7 @@ class EditEventFragment : Fragment(), MainContract.View {
     private fun pickTimeByDialog(isTimeFrom: Boolean){
         val now = Calendar.getInstance()
         val timePicker = TimePickerDialog(
-            this.requireContext(), { view, hourOfDay, minute ->
+            this.requireContext(), { _, hourOfDay, minute ->
                 val selectedTime = Calendar.getInstance()
                 selectedTime.set(Calendar.HOUR_OF_DAY, hourOfDay)
                 selectedTime.set(Calendar.MINUTE, minute)
@@ -154,12 +147,12 @@ class EditEventFragment : Fragment(), MainContract.View {
                     .setTitle(R.string.delete_the_event)
                     .setMessage(R.string.you_sure)
                     .setIcon(R.drawable.delete_icon)
-                commitDialog.setPositiveButton(R.string.yes) { dialog, id ->
+                commitDialog.setPositiveButton(R.string.yes) { _, _ ->
                     presenter.deleteEvent()
                     showMessage(getStringResource(R.string.event_deleted))
                     navToAnotherFragment(R.id.action_editEventFragment_to_calendarFragment)
                 }
-                commitDialog.setNegativeButton(R.string.no) { dialog, id -> }
+                commitDialog.setNegativeButton(R.string.no) { _, _ -> }
                 commitDialog.show()
                 return true
             }

@@ -8,8 +8,8 @@
     <fragment
         android:id="@+id/calendarFragment"
         android:name="com.example.calendarsymbersoft.view.fragments.CalendarFragment"
-        android:label="fragment_calendar"
-        tools:layout="@layout/fragment_calendar" >
+        android:label="@string/calendar"
+        tools:layout="@layout/fragment_calendar">
         <action
             android:id="@+id/action_calendarFragment_to_addEventFragment"
             app:destination="@id/addEventFragment" />
@@ -20,7 +20,7 @@
     <fragment
         android:id="@+id/addEventFragment"
         android:name="com.example.calendarsymbersoft.view.fragments.AddEventFragment"
-        android:label="AddEventFragment" >
+        android:label="@string/add_the_event">
         <action
             android:id="@+id/action_addEventFragment_to_calendarFragment"
             app:destination="@id/calendarFragment" />
@@ -28,21 +28,13 @@
     <fragment
         android:id="@+id/editEventFragment"
         android:name="com.example.calendarsymbersoft.view.fragments.EditEventFragment"
-        android:label="fragment_edit_event"
-        tools:layout="@layout/fragment_edit_event" >
+        android:label="@string/event_edit_menu"
+        tools:layout="@layout/fragment_edit_event">
         <action
             android:id="@+id/action_editEventFragment_to_calendarFragment"
             app:destination="@id/calendarFragment" />
         <argument
-            android:name="dayID"
-            app:argType="long" />
-        <argument android:name="eventID"
+            android:name="eventID"
             app:argType="integer" />
-        <argument
-            android:name="timeFrom"
-            app:argType="long" />
-        <argument
-            android:name="timeTo"
-            app:argType="long" />
     </fragment>
 </navigation>

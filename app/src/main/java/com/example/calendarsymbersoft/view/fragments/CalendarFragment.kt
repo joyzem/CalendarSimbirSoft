@@ -1,14 +1,11 @@
 package com.example.calendarsymbersoft.view.fragments
 
-import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.CalendarView
 import android.widget.Toast
-import androidx.navigation.NavDirections
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -32,7 +29,7 @@ class CalendarFragment : Fragment(),
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentCalendarBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -49,7 +46,7 @@ class CalendarFragment : Fragment(),
             navToAnotherFragment(R.id.action_calendarFragment_to_addEventFragment)
         }
 
-        binding.calendarView.setOnDateChangeListener { calendView, year, month, dayOfMonth ->
+        binding.calendarView.setOnDateChangeListener { _, year, month, dayOfMonth ->
             val selectedDay = Calendar.getInstance()
             selectedDay.set(Calendar.YEAR, year)
             selectedDay.set(Calendar.MONTH, month)
