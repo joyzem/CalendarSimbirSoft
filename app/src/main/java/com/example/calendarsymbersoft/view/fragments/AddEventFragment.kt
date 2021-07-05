@@ -2,6 +2,7 @@ package com.example.calendarsymbersoft.view.fragments
 
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
+import android.content.DialogInterface
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -142,7 +143,11 @@ class AddEventFragment : Fragment(), MainContract.View {
             },
             now.get(Calendar.HOUR_OF_DAY), 0, false
         )
+        timePicker.onClick(timePicker, DialogInterface.BUTTON_POSITIVE) {
+
+        }
         timePicker.show()
+
     }
 
     override fun getStringResource(resourceId: Int): String {
