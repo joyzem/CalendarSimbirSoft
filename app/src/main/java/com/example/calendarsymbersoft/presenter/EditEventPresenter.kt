@@ -6,44 +6,76 @@ import com.example.calendarsymbersoft.repository.MainRepository
 class EditEventPresenter {
 
     private val repository = MainRepository()
+    private var eventID: Int? = null
+    private var dayId: Long? = null
+    private var timeFrom: Long? = null
+    private var timeTo: Long? = null
+    private var description: String? = null
+    private var title: String? = null
 
-    fun getTitleByID (id: Int): String {
-        return repository
-            .realm.where(Event::class.java).equalTo("id", id).findFirst()?.title!!
+
+    fun fillAllByID() {
+        dayId = getEventDayId()
+        timeFrom = getEventTimeFrom()
+        timeTo = getEventTimeTo()
+        description = getEventDescription()
+        title = getEventTitle()
     }
 
-    fun getDayIdByID (id: Int): Long {
-        return repository
-            .realm.where(Event::class.java).equalTo("id", id).findFirst()?.dayId!!
+    fun setEventID(eventID: Int) {
+        this.eventID = eventID
     }
 
-    fun getTimeFromByID (id: Int): Long {
-        return repository
-            .realm.where(Event::class.java).equalTo("id", id).findFirst()?.timeFrom!!
+    fun setDayID(dayID: Long) {
+        dayId = dayID
     }
 
-    fun getTimeToByID (id: Int): Long {
-        return repository
-            .realm.where(Event::class.java).equalTo("id", id).findFirst()?.timeTo!!
+    fun setTimeFrom(time: Long) {
+        timeFrom = time
     }
 
-    fun getDescriptionById (id: Int): String {
-        return repository
-            .realm.where(Event::class.java).equalTo("id", id).findFirst()?.description!!
+    fun setTimeTo(time: Long) {
+        timeTo = time
     }
 
-    fun updateEvent (
-        id: Int,
-        title: String,
-        dayID: Long,
-        timeFrom: Long,
-        timeTo: Long,
-        description: String
-    ) {
+    fun setDescription(descr: String) {
+        description = descr
+    }
+
+    fun setEventTitle(title: String) {
+        this.title = title
+    }
+
+    fun getEventTitle (): String {
+        return repository
+            .realm.where(Event::class.java).equalTo("id", eventID).findFirst()?.title!!
+    }
+
+    fun getEventDayId (): Long {
+        return repository
+            .realm.where(Event::class.java).equalTo("id", eventID).findFirst()?.dayId!!
+    }
+
+    fun getEventTimeFrom (): Long {
+        return repository
+            .realm.where(Event::class.java).equalTo("id", eventID).findFirst()?.timeFrom!!
+    }
+
+    fun getEventTimeTo (): Long {
+        return repository
+            .realm.where(Event::class.java).equalTo("id", eventID).findFirst()?.timeTo!!
+    }
+
+    fun getEventDescription (): String {
+        return repository
+            .realm.where(Event::class.java).equalTo("id", eventID).findFirst()?.description!!
+    }
+
+    fun updateEvent () {
         val event = Event(
-            id = id,
+            id = eventID,
             title = title,
-            dayId = dayID,
+            dayId = dayId,
             timeFrom = timeFrom,
             timeTo = timeTo,
             description = description
@@ -52,8 +84,8 @@ class EditEventPresenter {
         repository.addOrUpdateEvent(eventJson)
     }
 
-    fun deleteEvent(id: Int) {
-        repository.deleteEventById(id)
+    fun deleteEvent() {
+        repository.deleteEventById(eventID!!)
     }
 
 }

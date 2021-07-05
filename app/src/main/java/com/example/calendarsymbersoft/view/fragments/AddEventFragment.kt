@@ -2,6 +2,7 @@ package com.example.calendarsymbersoft.view.fragments
 
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
+import android.content.Context
 import android.content.DialogInterface
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -24,9 +25,6 @@ class AddEventFragment : Fragment(), MainContract.View {
     private val presenter = AddEventPresenter(this)
     private var _binding: FragmentAddEventBinding? = null
     private val binding get() = _binding!!
-    private var dayId: Long? = null
-    private var timeFrom: Long? = null
-    private var timeTo: Long? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -43,33 +41,30 @@ class AddEventFragment : Fragment(), MainContract.View {
         }
 
         binding.timeFromEditText.setOnClickListener {
-            pickTimeFromByDialog()
+            pickTimeByDialog(isTimeFrom = true)
         }
 
         binding.timeToEditText.setOnClickListener {
-            pickTimeToByDialog()
+            pickTimeByDialog(isTimeFrom = false)
         }
 
         binding.commitBtn.setOnClickListener {
             try {
                 if (validFields()) {
+                    presenter.setEventTitle(binding.titleEditText.text.toString())
                     if (binding.descriptionEditText.text.isNullOrEmpty()) {
-                        binding.descriptionEditText.setText(R.string.no_description)
+                        presenter.setDescription(getString(R.string.no_description))
+                    } else {
+                        presenter.setDescription(binding.descriptionEditText.text.toString())
                     }
-                    val resultOfSaving = presenter.saveEventToDB(
-                        dayId = dayId!!,
-                        timeFrom = timeFrom!!,
-                        timeTo = timeTo!!,
-                        description = binding.descriptionEditText.text.toString(),
-                        title = binding.titleEditText.text.toString()
-                    )
-                    Toast.makeText(this.requireContext(), resultOfSaving, Toast.LENGTH_SHORT).show()
+                    val resultOfSaving = presenter.saveEventToDB()
+                    showMessage(resultOfSaving)
                     navToAnotherFragment(R.id.action_addEventFragment_to_calendarFragment)
                 } else {
-                    Toast.makeText(this.requireContext(), R.string.incorrect_input, Toast.LENGTH_SHORT).show()
+                    showMessage(getString(R.string.incorrect_input))
                 }
             } catch (e: Exception) {
-                Toast.makeText(this.requireContext(), "Error: $e", Toast.LENGTH_SHORT).show()
+                showMessage("Error: $e")
             }
         }
 
@@ -79,14 +74,11 @@ class AddEventFragment : Fragment(), MainContract.View {
     }
 
     private fun validFields(): Boolean {
-        if (!(binding.titleEditText.text.toString().isEmpty() ||
-                    binding.dateEditText.text.toString().isEmpty() ||
-                    binding.timeFromEditText.text.toString().isEmpty() ||
-                    binding.timeToEditText.text.toString().isEmpty()) &&
-                    dayId != null &&
-                    timeFrom != null &&
-                    timeTo != null &&
-                    timeFrom!! < timeTo!!) {
+        if (!(binding.titleEditText.text.toString().isEmpty()) &&
+                    presenter.getDayId() != null &&
+                    presenter.getTimeFrom() != null &&
+                    presenter.getTimeTo() != null &&
+                    presenter.getTimeFrom()!! < presenter.getTimeTo()!!) {
             return true
         } else {
             return false
@@ -106,9 +98,9 @@ class AddEventFragment : Fragment(), MainContract.View {
                 selectedDate.set(Calendar.MINUTE, 0)
                 selectedDate.set(Calendar.SECOND, 0)
                 selectedDate.set(Calendar.MILLISECOND, 0)
-                dayId = selectedDate.time.time
+                presenter.setDayID(selectedDate.time.time)
 
-                val dayTextFormat = TimeFormat.dateFormat.format(dayId)
+                val dayTextFormat = TimeFormat.dateFormat.format(selectedDate.time.time)
                 binding.dateEditText.setText(dayTextFormat)
             },
             now.get(Calendar.YEAR), now.get(Calendar.MONTH), now.get(Calendar.DAY_OF_MONTH)
@@ -116,38 +108,24 @@ class AddEventFragment : Fragment(), MainContract.View {
         datePicker.show()
     }
 
-    private fun pickTimeToByDialog(){
-        val now = Calendar.getInstance()
-        val timePicker = TimePickerDialog(
-            this.requireContext(), { view, hourOfDay, minute ->
-                val selectedTime = Calendar.getInstance()
-                selectedTime.set(Calendar.HOUR_OF_DAY, hourOfDay)
-                selectedTime.set(Calendar.MINUTE, minute)
-                timeTo = selectedTime.time.time
-                binding.timeToEditText.setText(TimeFormat.timeFormat.format(timeTo))
-            },
-            now.get(Calendar.HOUR_OF_DAY), 0, false
-        )
-        timePicker.show()
-    }
-
-    private fun pickTimeFromByDialog(){
+    private fun pickTimeByDialog(isTimeFrom: Boolean){
         val now = Calendar.getInstance()
         val timePicker = TimePickerDialog(
             this.requireContext(), TimePickerDialog.OnTimeSetListener { view, hourOfDay, minute ->
                 val selectedTime = Calendar.getInstance()
                 selectedTime.set(Calendar.HOUR_OF_DAY, hourOfDay)
                 selectedTime.set(Calendar.MINUTE, minute)
-                timeFrom = selectedTime.time.time
-                binding.timeFromEditText.setText(TimeFormat.timeFormat.format(timeFrom))
+                if (isTimeFrom) {
+                    presenter.setTimeFrom(selectedTime.time.time)
+                    binding.timeFromEditText.setText(TimeFormat.timeFormat.format(selectedTime.time.time))
+                } else {
+                    presenter.setTimeTo(selectedTime.time.time)
+                    binding.timeToEditText.setText(TimeFormat.timeFormat.format(selectedTime.time.time))
+                }
             },
             now.get(Calendar.HOUR_OF_DAY), 0, false
         )
-        timePicker.onClick(timePicker, DialogInterface.BUTTON_POSITIVE) {
-
-        }
         timePicker.show()
-
     }
 
     override fun getStringResource(resourceId: Int): String {
@@ -170,4 +148,6 @@ class AddEventFragment : Fragment(), MainContract.View {
         super.onDestroy()
         _binding = null
     }
+
+
 }

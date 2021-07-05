@@ -7,14 +7,10 @@ import com.example.calendarsymbersoft.contract.MainContract
 import com.example.calendarsymbersoft.model.Event
 import com.example.calendarsymbersoft.repository.MainRepository
 
-class CalendarPresenter(
-    private val calView: MainContract.View) : MainContract.CalendarPresenter {
-
+class CalendarPresenter {
     private val repository = MainRepository()
 
-    override fun loadEventsBySelectedDate(day: Long): List<Event> {
+    fun loadEventsBySelectedDate(day: Long): List<Event> {
         return repository.getEventsByDayId(day)
     }
-
-
 }

@@ -21,7 +21,6 @@ class MainRepository : MainContract.Repository {
         realm.executeTransaction {
             realm.createOrUpdateObjectFromJson(Event::class.java, jsonString)
         }
-        Log.d(TAG, "Success")
     }
 
     override fun deleteEvent(id: Int, dayId: Long) {

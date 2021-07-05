@@ -1,5 +1,6 @@
 package com.example.calendarsymbersoft.view.fragments
 
+import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -22,7 +23,7 @@ import java.util.*
 class CalendarFragment : Fragment(),
     MainContract.View {
 
-    private val presenter = CalendarPresenter(this)
+    private val presenter = CalendarPresenter()
     private var _binding: FragmentCalendarBinding? = null
     private val binding get() = _binding!!
     private lateinit var recyclerView: RecyclerView

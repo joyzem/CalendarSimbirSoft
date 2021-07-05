@@ -25,4 +25,5 @@
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="event_deleted">Event was deleted</string>
+    <string name="event_updated">Event updated successfully</string>
 </resources>
