@@ -20,9 +20,17 @@ import java.util.*
 class CalendarFragment : Fragment(),
     MainContract.View {
 
+    /**
+     * Fragment for events' observing
+     * Home screen
+     */
+
+    // Presenter for the fragment
     private val presenter = CalendarPresenter()
+    // Setting ViewBinding
     private var _binding: FragmentCalendarBinding? = null
     private val binding get() = _binding!!
+    // RecyclerView for events displaying
     private lateinit var recyclerView: RecyclerView
 
     override fun onCreateView(
@@ -35,18 +43,23 @@ class CalendarFragment : Fragment(),
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        // RecyclerView setting
         recyclerView = binding.eventsRV
         recyclerView.layoutManager = LinearLayoutManager(this.requireContext())
 
+        // Getting of the currentDay for updating recyclerView.Adapter
         val currentDay = Calendar.getInstance()
         setTimeToZero(currentDay)
+        // Updating of the recyclerView Dataset
         updateRecyclerViewDataset(currentDay.timeInMillis)
 
         binding.addEventBtn.setOnClickListener {
+            // Navigates to the AddEventFragment
             navToAnotherFragment(R.id.action_calendarFragment_to_addEventFragment)
         }
 
         binding.calendarView.setOnDateChangeListener { _, year, month, dayOfMonth ->
+            // Updating RecyclerView.Adapter dataset via selected day
             val selectedDay = Calendar.getInstance()
             selectedDay.set(Calendar.YEAR, year)
             selectedDay.set(Calendar.MONTH, month)

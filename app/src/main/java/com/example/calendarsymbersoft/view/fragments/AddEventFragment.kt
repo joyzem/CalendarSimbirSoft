@@ -19,7 +19,14 @@ import java.util.*
 
 class AddEventFragment : Fragment(), MainContract.View {
 
+    /**
+     * Fragment for adding new Events
+     * Navigated from the CalendarFragment
+     */
+
+    // Presenter of the fragment
     private val presenter = AddEventPresenter(this)
+    // Setting ViewBinding
     private var _binding: FragmentAddEventBinding? = null
     private val binding get() = _binding!!
 
@@ -33,6 +40,7 @@ class AddEventFragment : Fragment(), MainContract.View {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        // Binding listeners
         binding.dateEditText.setOnClickListener {
             pickDateByDialog()
         }
@@ -46,23 +54,7 @@ class AddEventFragment : Fragment(), MainContract.View {
         }
 
         binding.commitBtn.setOnClickListener {
-            try {
-                if (validFields()) {
-                    presenter.setEventTitle(binding.titleEditText.text.toString())
-                    if (binding.descriptionEditText.text.isNullOrEmpty()) {
-                        presenter.setDescription(getString(R.string.no_description))
-                    } else {
-                        presenter.setDescription(binding.descriptionEditText.text.toString())
-                    }
-                    val resultOfSaving = presenter.saveEventToDB()
-                    showMessage(resultOfSaving)
-                    navToAnotherFragment(R.id.action_addEventFragment_to_calendarFragment)
-                } else {
-                    showMessage(getString(R.string.incorrect_input))
-                }
-            } catch (e: Exception) {
-                showMessage("Error: $e")
-            }
+            commitBtnWasClicked()
         }
 
         binding.backBtn.setOnClickListener {
@@ -70,19 +62,13 @@ class AddEventFragment : Fragment(), MainContract.View {
         }
     }
 
-    private fun validFields(): Boolean {
-        return binding.titleEditText.text.toString().isNotEmpty() &&
-                presenter.getDayId() != null &&
-                presenter.getTimeFrom() != null &&
-                presenter.getTimeTo() != null &&
-                presenter.getTimeFrom()!! < presenter.getTimeTo()!!
-    }
-
     private fun pickDateByDialog() {
+        // Taking current date
         val now = Calendar.getInstance()
         val datePicker = DatePickerDialog(
             this.requireContext(),
             { _, year, month, dayOfMonth ->
+                // On date selected listener
                 val selectedDate = Calendar.getInstance()
                 selectedDate.set(Calendar.YEAR, year)
                 selectedDate.set(Calendar.MONTH, month)
@@ -91,8 +77,9 @@ class AddEventFragment : Fragment(), MainContract.View {
                 selectedDate.set(Calendar.MINUTE, 0)
                 selectedDate.set(Calendar.SECOND, 0)
                 selectedDate.set(Calendar.MILLISECOND, 0)
+                // Set DayId into the presenter
                 presenter.setDayID(selectedDate.time.time)
-
+                // Formatting the date
                 val dayTextFormat = TimeFormat.dateFormat.format(selectedDate.time.time)
                 binding.dateEditText.setText(dayTextFormat)
             },
@@ -101,15 +88,18 @@ class AddEventFragment : Fragment(), MainContract.View {
         datePicker.show()
     }
 
-    private fun pickTimeByDialog(isTimeFrom: Boolean){
+    private fun pickTimeByDialog(isTimeFrom: Boolean /* Necessary to define whether it's for
+     timeFrom textEdit or timeTo textEdit*/){
         val now = Calendar.getInstance()
         val timePicker = TimePickerDialog(
             this.requireContext(),
+            // On timeSetListener
             { _, hourOfDay, minute ->
                 val selectedTime = Calendar.getInstance()
                 selectedTime.set(Calendar.HOUR_OF_DAY, hourOfDay)
                 selectedTime.set(Calendar.MINUTE, minute)
                 if (isTimeFrom) {
+                    // Setting selected time to the presenter
                     presenter.setTimeFrom(selectedTime.time.time)
                     binding.timeFromEditText.setText(TimeFormat.timeFormat.format(selectedTime.time.time))
                 } else {
@@ -120,6 +110,32 @@ class AddEventFragment : Fragment(), MainContract.View {
             now.get(Calendar.HOUR_OF_DAY), 0, false
         )
         timePicker.show()
+    }
+
+    private fun commitBtnWasClicked() {
+        try {
+            // Checking for valid user input
+            if (presenter.validFields(binding.titleEditText.toString())) {
+                // Setting event's title to presenter
+                presenter.setEventTitle(binding.titleEditText.text.toString())
+                if (binding.descriptionEditText.text.isNullOrEmpty()) {
+                    // Setting description via strings' resources
+                    presenter.setDescription(getString(R.string.no_description))
+                } else {
+                    // ... Or entered description
+                    presenter.setDescription(binding.descriptionEditText.text.toString())
+                }
+                // Saving after checking
+                presenter.saveEventToDB()
+                // Navigating to the CalendarFragment
+                navToAnotherFragment(R.id.action_addEventFragment_to_calendarFragment)
+            } else {
+                // Toast "Incorrect input"
+                showMessage(getString(R.string.incorrect_input))
+            }
+        } catch (e: Exception) {
+            showMessage("Error: $e")
+        }
     }
 
     override fun getStringResource(resourceId: Int): String {
@@ -142,6 +158,4 @@ class AddEventFragment : Fragment(), MainContract.View {
         super.onDestroy()
         _binding = null
     }
-
-
 }

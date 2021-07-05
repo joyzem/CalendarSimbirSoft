@@ -18,13 +18,21 @@ import java.util.*
 
 class EditEventFragment : Fragment(), MainContract.View {
 
+    /**
+     * Fragment for events editing
+     * Navigated from CalendarFragment by clicking on the event
+     */
+
+    // ViewBinding setting
     private var _binding: FragmentEditEventBinding? = null
     private val binding get() = _binding!!
-    private val presenter = EditEventPresenter()
+    // Presenter for the fragment
+    private val presenter = EditEventPresenter(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
+            // Getting of eventID from the bundle
             presenter.setEventID(it.getInt("eventID"))
             presenter.fillAllByID()
         }
@@ -36,6 +44,7 @@ class EditEventFragment : Fragment(), MainContract.View {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        // Setting text into textEdits
         _binding = FragmentEditEventBinding.inflate(inflater, container, false)
         binding.title.setText(presenter.getEventTitle())
         binding.dateEditText.setText(TimeFormat.dateFormat.format(presenter.getEventDayId()))
@@ -47,6 +56,7 @@ class EditEventFragment : Fragment(), MainContract.View {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
+        // Listeners setting
         binding.dateEditText.setOnClickListener {
             pickDateByDialog()
         }
@@ -70,34 +80,37 @@ class EditEventFragment : Fragment(), MainContract.View {
 
     private fun onUpdateBtnClicked () {
         try {
-            if (validFields()) {
+            // Checking for valid user input
+            if (presenter.validInput(binding.title.toString())) {
+                // Setting event's title to presenter
                 presenter.setEventTitle(binding.title.text.toString())
                 if (binding.descriptionEditText.text.isNullOrEmpty()) {
+                    // Setting description via strings' resources
                     presenter.setDescription(getString(R.string.no_description))
                 } else {
+                    // ... Or entered description
                     presenter.setDescription(binding.descriptionEditText.text.toString())
                 }
+                // Updating after checking
                 presenter.updateEvent()
-                showMessage(getString(R.string.event_updated))
+                // Navigating to the CalendarFragment
                 navToAnotherFragment(R.id.action_editEventFragment_to_calendarFragment)
             } else {
+                // Toast "Incorrect input"
                 showMessage(getString(R.string.incorrect_input))
             }
         } catch (e: Exception) {
-            Toast.makeText(this.requireContext(), "Error: $e", Toast.LENGTH_SHORT).show()
+            showMessage("Error: $e")
         }
     }
 
-    private fun validFields(): Boolean {
-        return binding.title.text.toString().isNotEmpty() &&
-                presenter.getEventTimeFrom() < presenter.getEventTimeTo()
-    }
-
     private fun pickDateByDialog() {
+        // Taking current date
         val now = Calendar.getInstance()
         val datePicker = DatePickerDialog(
             this.requireContext(),
             { _, year, month, dayOfMonth ->
+                // On date selected listener
                 val selectedDate = Calendar.getInstance()
                 selectedDate.set(Calendar.YEAR, year)
                 selectedDate.set(Calendar.MONTH, month)
@@ -106,8 +119,9 @@ class EditEventFragment : Fragment(), MainContract.View {
                 selectedDate.set(Calendar.MINUTE, 0)
                 selectedDate.set(Calendar.SECOND, 0)
                 selectedDate.set(Calendar.MILLISECOND, 0)
+                // Set DayId into the presenter
                 presenter.setDayID(selectedDate.time.time)
-
+                // Formatting the date
                 val dayTextFormat = TimeFormat.dateFormat.format(selectedDate.time.time)
                 binding.dateEditText.setText(dayTextFormat)
             },
@@ -116,14 +130,18 @@ class EditEventFragment : Fragment(), MainContract.View {
         datePicker.show()
     }
 
-    private fun pickTimeByDialog(isTimeFrom: Boolean){
+    private fun pickTimeByDialog(isTimeFrom: Boolean /* Necessary to define whether it's for
+     timeFrom textEdit or timeTo textEdit*/ ){
         val now = Calendar.getInstance()
         val timePicker = TimePickerDialog(
-            this.requireContext(), { _, hourOfDay, minute ->
+            this.requireContext(),
+            // On timeSetListener
+            { _, hourOfDay, minute ->
                 val selectedTime = Calendar.getInstance()
                 selectedTime.set(Calendar.HOUR_OF_DAY, hourOfDay)
                 selectedTime.set(Calendar.MINUTE, minute)
                 if (isTimeFrom) {
+                    // Setting selected time to the presenter
                     presenter.setTimeFrom(selectedTime.time.time)
                     binding.timeFromEditText.setText(TimeFormat.timeFormat.format(selectedTime.time.time))
                 } else {
@@ -137,19 +155,25 @@ class EditEventFragment : Fragment(), MainContract.View {
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        // Options menu inflating
         inflater.inflate(R.menu.edit_event_menu_layout, menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
+            // On menu item click
             R.id.delete_event_icon -> {
+                // "Delete the event" dialog creating
                 val commitDialog = AlertDialog.Builder(this.requireContext())
                     .setTitle(R.string.delete_the_event)
                     .setMessage(R.string.you_sure)
                     .setIcon(R.drawable.delete_icon)
                 commitDialog.setPositiveButton(R.string.yes) { _, _ ->
+                    // Delete the event
                     presenter.deleteEvent()
+                    // Toast "Event was deleted"
                     showMessage(getStringResource(R.string.event_deleted))
+                    // Navigates to the CalendarFragment
                     navToAnotherFragment(R.id.action_editEventFragment_to_calendarFragment)
                 }
                 commitDialog.setNegativeButton(R.string.no) { _, _ -> }

@@ -1,9 +1,16 @@
 package com.example.calendarsymbersoft.presenter
 
+import com.example.calendarsymbersoft.R
+import com.example.calendarsymbersoft.contract.MainContract
 import com.example.calendarsymbersoft.model.Event
 import com.example.calendarsymbersoft.repository.MainRepository
 
-class EditEventPresenter {
+class EditEventPresenter(private val mView: MainContract.View) {
+
+    /**
+     *  Presenter for EditEventFragment
+     *  Contains logic related to Events' updating
+     */
 
     private val repository = MainRepository()
     private var eventID: Int? = null
@@ -13,7 +20,7 @@ class EditEventPresenter {
     private var description: String? = null
     private var title: String? = null
 
-
+    // Initialization of the fields with the eventID
     fun fillAllByID() {
         dayId = getEventDayId()
         timeFrom = getEventTimeFrom()
@@ -46,31 +53,36 @@ class EditEventPresenter {
         this.title = title
     }
 
+    // Checking for valid input
+    // We have to check only that title is not empty
+    // And timeFrom is less than timeTo
+    // TextEdits: date, timeFrom, timeTo are not empty exactly
+    fun validInput(title: String): Boolean {
+        return timeFrom!! < timeTo!! && title.isNotEmpty()
+    }
+
+    // Taking values from the database
     fun getEventTitle (): String {
-        return repository
-            .realm.where(Event::class.java).equalTo("id", eventID).findFirst()?.title!!
+        return repository.getTitle(eventID!!)
     }
 
     fun getEventDayId (): Long {
-        return repository
-            .realm.where(Event::class.java).equalTo("id", eventID).findFirst()?.dayId!!
+        return repository.getDayId(eventID!!)
     }
 
     fun getEventTimeFrom (): Long {
-        return repository
-            .realm.where(Event::class.java).equalTo("id", eventID).findFirst()?.timeFrom!!
+        return repository.getTimeFrom(eventID!!)
     }
 
     fun getEventTimeTo (): Long {
-        return repository
-            .realm.where(Event::class.java).equalTo("id", eventID).findFirst()?.timeTo!!
+        return repository.getTimeTo(eventID!!)
     }
 
     fun getEventDescription (): String {
-        return repository
-            .realm.where(Event::class.java).equalTo("id", eventID).findFirst()?.description!!
+        return repository.getDescription(eventID!!)
     }
 
+    // Event's updating
     fun updateEvent () {
         val event = Event(
             id = eventID,
@@ -80,10 +92,18 @@ class EditEventPresenter {
             timeTo = timeTo,
             description = description
         )
-        val eventJson = repository.gson.toJson(event)
-        repository.addOrUpdateEvent(eventJson)
+        if (event.validFields()) {
+            val eventJson = repository.gson.toJson(event)
+            repository.addOrUpdateEvent(eventJson)
+            // Toast "Event updated successfully"
+            mView.showMessage(mView.getStringResource(R.string.event_updated))
+        } else {
+            // Toast "Incorrect input"
+            mView.showMessage(mView.getStringResource(R.string.incorrect_input))
+        }
     }
 
+    // Delete the event by eventID
     fun deleteEvent() {
         repository.deleteEvent(eventID!!)
     }

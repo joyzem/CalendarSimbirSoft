@@ -10,6 +10,8 @@ import com.example.calendarsymbersoft.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
 
+    // MainActivity of the application
+
     private lateinit var navController: NavController
 
     override fun onCreate(savedInstanceState: Bundle?) {

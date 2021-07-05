@@ -16,8 +16,13 @@ class EventsAdapter(
     private val eventsList: List<Event> = listOf())
     : RecyclerView.Adapter<EventsAdapter.EventViewHolder>() {
 
-    class EventViewHolder(view: View, calView: MainContract.View,  eventsList: List<Event>) : RecyclerView.ViewHolder(view) {
+    /**
+     * RecyclerView Adapter for CalendarFragment
+     * Displays list of Events by selected date
+     */
 
+    class EventViewHolder(view: View, calView: MainContract.View,  eventsList: List<Event>) : RecyclerView.ViewHolder(view) {
+        // Views of the layout
         val title: TextView = view.findViewById(R.id.eventTitle)
         val time: TextView = view.findViewById(R.id.eventTime)
         val description: TextView = view.findViewById(R.id.eventDescription)
@@ -26,8 +31,10 @@ class EventsAdapter(
         init {
             view.setOnClickListener {
                 try {
+                    // On card click navigates to the EditEventFragment
                     val positionIndex = absoluteAdapterPosition
                     val bundle = Bundle()
+                    // Putting eventID to the bundle via save-args
                     bundle.putInt("eventID", eventsList[positionIndex].id!!)
                     calView.navToAnotherFragment(
                         R.id.action_calendarFragment_to_editEventFragment,
@@ -41,6 +48,7 @@ class EventsAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EventViewHolder{
+        // Inflating of the layout
         val adapterLayout = LayoutInflater.from(parent.context)
             .inflate(R.layout.event_rv_layout, parent, false)
         return EventViewHolder(adapterLayout, calView, eventsList)

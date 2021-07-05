@@ -7,6 +7,11 @@ import com.example.calendarsymbersoft.repository.MainRepository
 
 class AddEventPresenter(private val addEventView: MainContract.View){
 
+    /**
+     * Presenter for AddEventFragment
+     * Contains logic related to adding of Events...
+     */
+
     private val repository = MainRepository()
     private var dayID: Long? = null
     private var eventTitle: String? = null
@@ -34,15 +39,21 @@ class AddEventPresenter(private val addEventView: MainContract.View){
         eventTitle = title
     }
 
-    fun getDayId() = dayID
+    // Validation of fields of Event class
+    fun validFields(title: String) : Boolean {
+        return title.isNotEmpty() &&
+                dayID != null &&
+                eventTimeFrom != null &&
+                eventTimeTo != null &&
+                eventTimeFrom!! < eventTimeTo!!
+    }
 
-    fun getTimeFrom() = eventTimeFrom
-
-    fun getTimeTo() = eventTimeTo
-
-    fun saveEventToDB(): String {
+    // Saving of Event to the Database
+    fun saveEventToDB() {
         try {
+            // Finding next ID for the new Event
             val nextId = repository.findNextId()
+            // Creating instance of Event class
             val event = Event (
                 dayId = dayID,
                 timeFrom = eventTimeFrom,
@@ -51,12 +62,19 @@ class AddEventPresenter(private val addEventView: MainContract.View){
                 description = description,
                 id = nextId
             )
-
-            val eventJson = repository.gson.toJson(event)
-            repository.addOrUpdateEvent(eventJson)
-            return addEventView.getStringResource(R.string.event_added_successfully)
+            // Checking for validality
+            if (event.validFields()) {
+                val eventJson = repository.gson.toJson(event)
+                // Saving with Json
+                repository.addOrUpdateEvent(eventJson)
+                // Toast message "Event added successfully"
+                addEventView.showMessage(addEventView.getStringResource(R.string.event_added_successfully))
+            } else {
+                // Toast message "Incorrect input"
+                addEventView.showMessage(addEventView.getStringResource(R.string.incorrect_input))
+            }
         } catch (e: Exception) {
-            return e.toString()
+            addEventView.showMessage(e.toString())
         }
     }
 }

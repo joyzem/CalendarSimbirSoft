@@ -5,6 +5,7 @@ import com.example.calendarsymbersoft.model.Event
 
 interface MainContract {
 
+    // interfaces for Fragments and Repository
     interface View {
         fun getStringResource(resourceId: Int): String
         fun navToAnotherFragment(resourceId: Int)
